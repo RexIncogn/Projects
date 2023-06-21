@@ -1,0 +1,121 @@
+import csv
+import os
+from datetime import datetime
+
+class Expense:
+    def __init__(self, date, category, description, amount):
+        self.date = date
+        self.category = category
+        self.description = description
+        self.amount = amount
+
+class ExpenseTracker:
+    def __init__(self):
+        self.expenses = []
+
+    def add_expense(self, expense):
+        self.expenses.append(expense)
+
+    def remove_expense(self, expense):
+        self.expenses.remove(expense)
+
+    def calculate_total_expenses(self):
+        total = 0
+        for expense in self.expenses:
+            total += expense.amount
+        return total
+
+    def get_expenses_by_category(self, category):
+        category_expenses = []
+        for expense in self.expenses:
+            if expense.category == category:
+                category_expenses.append(expense)
+        return category_expenses
+
+    def save_expenses_to_file(self, filename):
+        with open(filename, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(['Date', 'Category', 'Description', 'Amount'])
+            for expense in self.expenses:
+                writer.writerow([expense.date, expense.category, expense.description, expense.amount])
+
+    def load_expenses_from_file(self, filename):
+        if os.path.exists(filename):
+            with open(filename, 'r') as csvfile:
+                reader = csv.reader(csvfile)
+                next(reader)  # Skip the header row
+                for row in reader:
+                    date = datetime.strptime(row[0], '%Y-%m-%d').date()
+                    category = row[1]
+                    description = row[2]
+                    amount = float(row[3])
+                    expense = Expense(date, category, description, amount)
+                    self.add_expense(expense)
+
+
+# Create an instance of the ExpenseTracker class
+tracker = ExpenseTracker()
+
+# Load expenses from a file (if exists)
+tracker.load_expenses_from_file('expenses.csv')
+
+# Expense tracking loop
+while True:
+    print("Expense Tracker")
+    print("----------------")
+    print("1. Add Expense")
+    print("2. Remove Expense")
+    print("3. Calculate Total Expenses")
+    print("4. Get Expenses by Category")
+    print("5. Save Expenses to File")
+    print("6. Exit")
+
+    choice = input("Enter your choice (1-6): ")
+
+    if choice == '1':
+        date = input("Enter the date (YYYY-MM-DD): ")
+        category = input("Enter the category: ")
+        description = input("Enter the description: ")
+        amount = float(input("Enter the amount: "))
+        expense = Expense(date, category, description, amount)
+        tracker.add_expense(expense)
+        print("Expense added successfully!")
+
+    elif choice == '2':
+        print("Current Expenses:")
+        for i, expense in enumerate(tracker.expenses):
+            print(f"{i+1}. {expense.date} - {expense.category} - {expense.description} - {expense.amount}")
+
+        expense_number = int(input("Enter the expense number to remove: "))
+        if 1 <= expense_number <= len(tracker.expenses):
+            expense = tracker.expenses[expense_number - 1]
+            tracker.remove_expense(expense)
+            print("Expense removed successfully!")
+        else:
+            print("Invalid expense number.")
+
+    elif choice == '3':
+        total_expenses = tracker.calculate_total_expenses()
+        print("Total expenses:", total_expenses)
+
+    elif choice == '4':
+        category = input("Enter the category: ")
+        expenses_by_category = tracker.get_expenses_by_category(category)
+        if expenses_by_category:
+            print(f"Expenses in the {category} category:")
+            for i, expense in enumerate(expenses_by_category):
+                print(f"{i+1}. {expense.date} - {expense.description} - {expense.amount}")
+        else:
+            print("No expenses found in the specified category.")
+
+    elif choice == '5':
+        filename = input("Enter the filename to save: ")
+        tracker.save_expenses_to_file(filename)
+        print("Expenses saved to file successfully!")
+
+    elif choice == '6':
+        break
+
+    else:
+        print("Invalid choice. Please try again.")
+
