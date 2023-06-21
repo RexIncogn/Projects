@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Quiz App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    #quiz {
+      width: 500px;
+      margin: 0 auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+    }
+
+    .question {
+      margin-bottom: 10px;
+    }
+
+    .options {
+      margin-bottom: 20px;
+    }
+
+    .option {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .result {
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Quiz App</h1>
+  <div id="quiz">
+    <div id="question" class="question"></div>
+    <div id="options" class="options"></div>
+    <button onclick="checkAnswer()">Next</button>
+  </div>
+  <div id="result" class="result"></div>
+
+  <script>
+    const quizData = [
+      {
+        question: "What is the capital of France?",
+        options: ["Paris", "London", "Berlin", "Rome"],
+        answer: "Paris"
+      },
+      {
+        question: "Which country is known as the Land of the Rising Sun?",
+        options: ["China", "Japan", "India", "Australia"],
+        answer: "Japan"
+      },
+      {
+        question: "What is the largest planet in our solar system?",
+        options: ["Venus", "Saturn", "Jupiter", "Mars"],
+        answer: "Jupiter"
+      },
+      {
+        question: "Who painted the Mona Lisa?",
+        options: ["Leonardo da Vinci", "Vincent van Gogh", "Pablo Picasso", "Michelangelo"],
+        answer: "Leonardo da Vinci"
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    const questionElement = document.getElementById("question");
+    const optionsElement = document.getElementById("options");
+    const resultElement = document.getElementById("result");
+
+    function loadQuestion() {
+      const quiz = quizData[currentQuestion];
+      questionElement.textContent = quiz.question;
+
+      optionsElement.innerHTML = "";
+      for (let i = 0; i < quiz.options.length; i++) {
+        const option = document.createElement("button");
+        option.classList.add("option");
+        option.textContent = quiz.options[i];
+        option.addEventListener("click", function () {
+          checkAnswer(option.textContent);
+        });
+        optionsElement.appendChild(option);
+      }
+    }
+
+    function checkAnswer(selectedOption) {
+      const quiz = quizData[currentQuestion];
+      if (selectedOption === quiz.answer) {
+        score++;
+      }
+
+      currentQuestion++;
+
+      if (currentQuestion < quizData.length) {
+        loadQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    function showResult() {
+      quiz.style.display = "none";
+      resultElement.textContent = `You scored ${score} out of ${quizData.length}!`;
+      resultElement.style.display = "block";
+    }
+
+    loadQuestion();
+  </script>
+</body>
+</html>
